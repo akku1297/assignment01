@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:s3="http://www.mulesoft.org/schema/mule/s3" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="mainBatchTriggerFlow" doc:id="bc192688-8137-47dd-8c9e-d3765367eea1" >
+		<scheduler doc:name="Scheduler" doc:id="21f7dad8-4077-48e7-840e-dc8fced21413">
+			<scheduling-strategy>
+				<cron expression="0 0 3 ? * *" />
+			</scheduling-strategy>
+		</scheduler>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="77bc789c-c460-4076-93d5-39be7e37af85" >
+			<route >
+				<flow-ref doc:name="trigger Account Loading Flow " doc:id="7d725037-6dc3-4052-8986-f87f1dd31c73" name="loadAccountsData"/>
+			</route>
+			<route >
+				<flow-ref doc:name="trigger Inventory Loading Flow " doc:id="5afe2b74-4e05-4c2a-a22c-a1be8fd8bce5" name="loadInventoryData"/>
+			</route>
+		</scatter-gather>
+		<logger level="INFO" doc:name="Logger" doc:id="374bcbda-18fa-4ac6-878b-e2df15f21401" message="#[payload]"/>
+	
+</flow>
+	<flow name="loadAccountsData" doc:id="92d440c5-9f68-421d-bd41-069878bbbd3a">
+		<s3:get-object doc:name="Get object" doc:id="31794ad5-4345-42ba-9374-0e205056a35b" bucketName="assignment1-b34" key="accounts.csv" config-ref="Amazon_S3_Configuration"/>
+		<ee:transform doc:name="CSV to JSON" doc:id="cf8c2bdf-9f59-45ad-b830-f8e82732542d">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Object Formatting" doc:id="8a2f7ca6-bf3b-420a-8678-9f8574be900e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map(value , index) -> {
+	Name: value.Name,
+	AccountNumber: value.AccountNumber,
+	EmailEmail__c: value.Email
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<batch:job jobName="assignment1_g13_integrationBatch_Job" doc:id="ac504978-45b0-4f8d-aafa-dda258ef21a7" >
+			<batch:process-records >
+				<batch:step name="Step1_CheckIfAccountExists" doc:id="0b2919de-2479-4966-a64a-6483ddc05b8c" >
+					<logger level="INFO" doc:name="Logger" doc:id="a143c718-365c-4b5c-ac4c-bb4b03b571bd" message="#[payload]" />
+					<salesforce:query doc:name="Query" doc:id="28c4a3bb-bd01-4575-90ef-c3ca73cf4c47" config-ref="Salesforce_Config" target="existsFlag" targetValue="#[sizeOf(payload as Array) &gt; 0]">
+			<salesforce:salesforce-query><![CDATA[SELECT Name FROM Account WHERE EmailEmail__c = ':email']]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	"email" : payload.EmailEmail__c default "" as String 
+}]]]></salesforce:parameters>
+		</salesforce:query>
+				</batch:step>
+				<batch:step name="Step2_CreateIfNotExists" doc:id="70100cef-f0e7-47e0-8489-35c0f3b33997" acceptExpression="#[not vars.existsFlag]">
+					<logger level="INFO" doc:name="Logger" doc:id="95989fc7-ee8d-4222-9213-4163a4719122" message="#[payload]"/>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="b7abdfd9-efe3-4acf-8cf0-e42eedcaf46e" size="10">
+						<salesforce:create doc:name="Create" doc:id="d9ce2357-cd99-4d17-b609-6d6772964c35" config-ref="Salesforce_Config" type="Account"/>
+						<logger level="INFO" doc:name="Logger" doc:id="1b86fd72-0338-44c9-93cf-021927a46d54" message="#[payload]"/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="30e01a88-d15d-4adc-b4f1-537a8290a013" message="#[payload]"/>
+			</batch:on-complete>
+		</batch:job>
+	</flow>
+	<flow name="loadInventoryData" doc:id="46459b83-8ae8-4af9-97bb-9b4fef303b10" >
+		<s3:get-object doc:name="Get object" doc:id="75a6059f-5477-46f0-83fa-e0dd6b0fd5da" bucketName="assignment1-b34" key="inventory.txt" config-ref="Amazon_S3_Configuration"/>
+		<ee:transform doc:name="TXT to JSON" doc:id="71bac068-b62a-4ffd-8734-043c39a9298d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Object Formatting" doc:id="c9afd4b3-5af6-4624-8f09-61a01cace082" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<batch:job jobName="process_apisBatch_Job" doc:id="36fa1f82-3d47-42f8-b1a1-6c64ae845353" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="9f400ddf-e3af-4f1e-be49-3d6f3d3df91f" >
+					<logger level="INFO" doc:name="Logger" doc:id="4a9be3e8-c86d-4b0f-849e-16f74e449f81" message="#[payload]"/>
+					<ee:transform doc:name="Transform Message" doc:id="67773cf5-d70b-4982-bf6d-b0bc63df54c4" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="b79ab6ec-83ce-4f63-8c37-692327635244" size="100">
+						<db:insert doc:name="Insert" doc:id="63240ae7-e4f3-4fc7-a14b-ed577f5e3eef" config-ref="Database_Config">
+							<db:sql ><![CDATA[INSERT INTO stg_inventory (itemName , itemId , quantity , price) VALUES ( ':itemname' , ':itemid' , ':quantity' , ':price' )]]></db:sql>
+							<db:input-parameters ><![CDATA[#[{
+	"itemname" : payload.itemName,
+	"itemId" : payload.itemId,
+	"quantity" : payload.quantity,
+	"price" : payload.price
+}]]]></db:input-parameters>
+						</db:insert>
+						<logger level="INFO" doc:name="Logger" doc:id="cc351ae4-176b-4098-a72e-277ef8f870b4" message="#[payload]"/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="0327a05b-50e6-4dfc-9f3f-902152f464e9" />
+				<ee:transform doc:name="Transform Message" doc:id="09c5a9e5-c788-4c12-bb96-6c255351a727" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</batch:on-complete>
+		</batch:job>
+	</flow>
+
+</mule>

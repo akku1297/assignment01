@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:assignment1api-specifications="http://www.mulesoft.org/schema/mule/assignment1api-specifications" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/assignment1api-specifications http://www.mulesoft.org/schema/mule/assignment1api-specifications/current/mule-assignment1api-specifications.xsd">
+	<flow name="createOrder" doc:id="b3f533ac-ce1b-488a-9b86-3515b460e231" >
+		<assignment1api-specifications:create-order doc:name="Create order" doc:id="34002254-bae3-491d-94e5-c3796a3d0b9c" config-ref="Assignment_1_API_Specifications_Config" client-id="${user.client_id}" client-secret="${user.client_secret}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="53432a91-f9e4-4396-939e-270998e74432" />
+	</flow>
+	<flow name="deleteUser" doc:id="bdff62e1-4526-4f38-bc9b-3ef65d78aa6c" >
+		<assignment1api-specifications:delete-users doc:name="Delete users" doc:id="741ecf52-25e9-4c1b-ac05-bb0646c286ff" config-ref="Assignment_1_API_Specifications_Config" client-id="${user.client_id}" client-secret="${user.client_secret}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8b988801-49b9-4551-8b15-28c6ecd721b8" />
+	</flow>
+	<flow name="updateOrder" doc:id="54129578-dac5-4453-a852-b65d5040ee8b" >
+		<assignment1api-specifications:update-orders doc:name="Update orders" doc:id="4f3064bd-d6b9-4fe4-bf79-cd1be49f5bac" config-ref="Assignment_1_API_Specifications_Config" client-id="${user.client_id}" client-secret="${user.client_secret}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1f158970-fc19-475f-9aea-44e98f04e43a" />
+	</flow>
+	<flow name="createUser" doc:id="892fd458-05c7-4376-a53f-3d05a35f98e2" >
+		<assignment1api-specifications:create-user doc:name="Create user" doc:id="9398e3f4-0f5f-4380-8db0-0962415d4ff6" config-ref="Assignment_1_API_Specifications_Config" client-id="${user.client_id}" client-secret="${user.client_secret}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="83c54855-4792-4028-963b-96ac4a92eb20" />
+	</flow>
+	<flow name="updateUser" doc:id="83e8305c-db12-492b-9b90-756c5879ca95" >
+		<assignment1api-specifications:update-users doc:name="Update users" doc:id="364cddea-8765-41c4-94b7-80173f806c51" config-ref="Assignment_1_API_Specifications_Config" client-id="${user.client_id}" client-secret="${user.client_secret}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="86af7565-0976-4d2d-96cc-3c43ac097b48" />
+	</flow>
+</mule>

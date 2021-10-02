@@ -1,0 +1,20 @@
+aws_s3:
+  access_key: "AKIAZENABQQV3B3MJXEM"
+  secret_key: "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"
+  
+sfdc:
+  username: "shashank.kawle@apisero.com"
+  password: "adreno@123"
+  token: "kuAxz7FPrkcJ1VtDlztmXgSLU"
+  
+user:
+  client_id: "584f93ae35174663b6032962c67ac49b"
+  client_secret: "922CEE88023744fCa8eEE5B60c63Cdb6"
+
+
+mysql:
+  host: "sql6.freemysqlhosting.net"
+  port: "3306"
+  user: "sql6441072"
+  password: "xR6taE4Yls"
+  database: "sql6441072"

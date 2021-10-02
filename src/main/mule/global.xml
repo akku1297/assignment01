@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:assignment1api-specifications="http://www.mulesoft.org/schema/mule/assignment1api-specifications" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/assignment1api-specifications http://www.mulesoft.org/schema/mule/assignment1api-specifications/current/mule-assignment1api-specifications.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<assignment1api-specifications:config name="Assignment_1_API_Specifications_Config" doc:name="Assignment 1 API Specifications Config" doc:id="83a9fb43-344c-4c8d-9593-81a1aa038ed5" property_host="core-system-apis.us-e2.cloudhub.io" property_port="80" property_protocol="HTTP" />
+	<configuration-properties doc:name="Configuration properties" doc:id="c08af8bb-8394-4e16-bd05-717767b2d1da" file="config.yaml" />
+	<s3:config name="Amazon_S3_Configuration" doc:name="Amazon S3 Configuration" doc:id="d99ec046-ff02-44b8-8dea-b581dbd0465f" >
+		<s3:basic-connection accessKey="${aws_s3.access_key}" secretKey="${aws_s3.secret_key}" region="US_EAST_2"/>
+	</s3:config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="6ed76e44-6764-4427-bfd3-1547a2c3f8de" >
+		<salesforce:basic-connection username="${sfdc.username}" password="${sfdc.password}" securityToken="${sfdc.token}" />
+	</salesforce:sfdc-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="e11748b7-6ed7-46d8-9e39-5340e2376fe1" >
+		<db:my-sql-connection host="${mysql.host}" port="${mysql.port}" user="${mysql.user}" password="${mysql.password}" database="${mysql.database}" />
+	</db:config>
+</mule>
