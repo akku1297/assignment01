@@ -3,7 +3,7 @@
     <http:listener-config name="experience-httpListenerConfig">
         <http:listener-connection host="0.0.0.0" port="8081" />
     </http:listener-config>
-    <apikit:config name="experience-config" api="resource::054f94b9-f703-43ce-a240-88e278a0d47f:process_api:1.0.5:raml:zip:experience.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <apikit:config name="experience-config" api="resource::054f94b9-f703-43ce-a240-88e278a0d47f:process_api:1.0.8:raml:zip:experience.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="experience-main">
         <http:listener config-ref="experience-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -136,6 +136,12 @@ output application/json
         <flow-ref doc:name="Flow Reference" doc:id="129f9ca4-41c5-483a-abee-3f0d9b944cd4" name="createOrder" />
     </flow>
     <flow name="post:\adduser:application\json:experience-config">
-		<flow-ref doc:name="Flow Reference" doc:id="da89b071-584b-466d-aaf1-84bb32dfecf2" name="createUser"/>
+        <flow-ref doc:name="Flow Reference" doc:id="da89b071-584b-466d-aaf1-84bb32dfecf2" name="createUser" />
+    </flow>
+    <flow name="get:\getorder:experience-config">
+        <flow-ref doc:name="Flow Reference" doc:id="0f0843d9-49b6-454e-884f-4ee3e203362f" name="getOrders" />
+    </flow>
+	<flow name="delete:\deleteuser:application\json:experience-config">
+		<flow-ref doc:name="Flow Reference" doc:id="670c57b4-4220-4d33-99ed-7961835e7b1c" name="deleteUser"/>
     </flow>
 </mule>

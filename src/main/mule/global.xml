@@ -20,5 +20,4 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="e11748b7-6ed7-46d8-9e39-5340e2376fe1" >
 		<db:my-sql-connection host="${mysql.host}" port="${mysql.port}" user="${mysql.user}" password="${mysql.password}" database="${mysql.database}" />
 	</db:config>
-	<api-gateway:autodiscovery apiId="17317294" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="97dbb8ed-b6ed-49d9-a6ce-9d0de4e54b55" flowRef="experience-main" />
 </mule>

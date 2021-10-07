@@ -9,6 +9,10 @@ http://www.mulesoft.org/schema/mule/assignment1api-specifications http://www.mul
 		<assignment1api-specifications:create-order doc:name="Create order" doc:id="34002254-bae3-491d-94e5-c3796a3d0b9c" config-ref="Assignment_1_API_Specifications_Config" client-id="${user.client_id}" client-secret="${user.client_secret}"/>
 		<logger level="INFO" doc:name="Logger" doc:id="53432a91-f9e4-4396-939e-270998e74432" />
 	</flow>
+	<flow name="getOrders" doc:id="ac82b711-3ac2-41ee-b2b9-93753d916745" >
+		<assignment1api-specifications:get-orders doc:name="getOrders" doc:id="4d100e57-583d-4946-9dc9-63d6f4eb8741" config-ref="Assignment_1_API_Specifications_Config" sc-name="TestUser1" client-id="${user.client_id}" client-secret="${user.client_secret}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="058eadf5-cb98-436f-927e-84803ea87518" />
+	</flow>
 	<flow name="deleteUser" doc:id="bdff62e1-4526-4f38-bc9b-3ef65d78aa6c" >
 		<assignment1api-specifications:delete-users doc:name="Delete users" doc:id="741ecf52-25e9-4c1b-ac05-bb0646c286ff" config-ref="Assignment_1_API_Specifications_Config" client-id="${user.client_id}" client-secret="${user.client_secret}"/>
 		<logger level="INFO" doc:name="Logger" doc:id="8b988801-49b9-4551-8b15-28c6ecd721b8" />
@@ -24,8 +28,5 @@ http://www.mulesoft.org/schema/mule/assignment1api-specifications http://www.mul
 	<flow name="updateUser" doc:id="83e8305c-db12-492b-9b90-756c5879ca95" >
 		<assignment1api-specifications:update-users doc:name="Update users" doc:id="364cddea-8765-41c4-94b7-80173f806c51" config-ref="Assignment_1_API_Specifications_Config" client-id="${user.client_id}" client-secret="${user.client_secret}"/>
 		<logger level="INFO" doc:name="Logger" doc:id="86af7565-0976-4d2d-96cc-3c43ac097b48" />
-	</flow>
-	<flow name="implementationFlow" doc:id="2417cc18-7c95-4ad1-8c12-b7ee10be8c0f" >
-		<logger level="INFO" doc:name="Logger" doc:id="263c49e8-78df-4d4e-b0f2-1db57c1bf2b1" message="akansha"/>
 	</flow>
 </mule>
